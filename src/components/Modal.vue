@@ -1,3 +1,9 @@
+<script setup lang="ts">
+const props = defineProps<{
+  open: boolean;
+}>()
+</script>
+
 <template>
   <div v-show="open" class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
     aria-hidden="true">
@@ -22,9 +28,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-const props = defineProps<{
-  open: boolean;
-}>()
-</script>

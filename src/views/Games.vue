@@ -1,3 +1,108 @@
+<script setup lang="ts">
+import { onMounted, reactive } from 'vue';
+import Modal from '../components/Modal.vue';
+
+
+interface State {
+  games: {
+    id: number;
+    title: string;
+    genre: string;
+    played: boolean;
+  }[];
+  game: {
+    id: number;
+    title: string;
+    genre: string;
+    played: boolean;
+  };
+  modal: boolean;
+  mode: boolean;
+}
+
+const state: State = reactive({
+  games: [],
+  game: {
+    id: Date.now(),
+    title: "",
+    genre: "",
+    played: false,
+  },
+  modal: false,
+  mode: true,
+})
+
+onMounted(async () => {
+  await getGames()
+})
+
+
+function getGames() {
+  const storageGames = localStorage.getItem("Games")
+  const games = JSON.parse(String(storageGames))
+  state.games = games
+}
+
+
+function getGame(pk: number) {
+  state.games.filter(game => {
+    if (game.id == pk)
+      state.game = game
+  })
+}
+
+
+function createGame() {
+  const storageGames = localStorage.getItem("Games")
+  state.games = JSON.parse(String(storageGames));
+  if (!state.games) state.games = [];
+
+  state.games.push(state.game)
+  localStorage.setItem("Games", JSON.stringify(state.games))
+
+  resetForm()
+}
+
+
+function updateGame() {
+  const storageGames = localStorage.getItem("Games")
+  state.games = JSON.parse(String(storageGames))
+
+  state.games.filter(game => {
+    if (game.id == state.game.id) {
+      const index = state.games.indexOf(game)
+      state.games[index] = state.game
+
+      localStorage.setItem("Games", JSON.stringify(state.games))
+    }
+  })
+
+  resetForm()
+}
+
+
+function deleteGame(pk: number) {
+  state.games.filter(game => {
+    if (game.id == pk) {
+      const index = state.games.indexOf(game)
+      state.games.splice(index, 1)
+
+      localStorage.setItem("Games", JSON.stringify(state.games))
+    }
+  })
+}
+
+
+function resetForm() {
+  state.game = {
+    id: Date.now(),
+    title: "",
+    genre: "",
+    played: false,
+  }
+}
+</script>
+
 <template>
   <div class="jumbotron vertical-center">
     <div class="container">
@@ -86,112 +191,6 @@
     </div>
   </div>
 </template>
-  
-<script setup lang="ts">
-import { onMounted, reactive } from 'vue';
-import Modal from '../components/Modal.vue';
-
-
-interface State {
-  games: {
-    id: number;
-    title: string;
-    genre: string;
-    played: boolean;
-  }[];
-  game: {
-    id: number;
-    title: string;
-    genre: string;
-    played: boolean;
-  };
-  modal: boolean;
-  mode: boolean;
-}
-
-const state: State = reactive({
-  games: [],
-  game: {
-    id: Date.now(),
-    title: "",
-    genre: "",
-    played: false,
-  },
-  modal: false,
-  mode: true,
-})
-
-onMounted(async () => {
-  await getGames()
-})
-
-
-function getGames() {
-  const storageGames = localStorage.getItem("Games")
-  const games = JSON.parse(String(storageGames))
-  state.games = games
-}
-
-
-function getGame(pk: number) {
-  state.games.filter(game => {
-    if (game.id == pk)
-      state.game = game
-  })
-}
-
-
-function createGame() {
-  const storageGames = localStorage.getItem("Games")
-  state.games = JSON.parse(String(storageGames));
-  if (!state.games) state.games = [];
-
-  state.games.push(state.game)
-  localStorage.setItem("Games", JSON.stringify(state.games))
-
-  resetForm()
-}
-
-
-function updateGame() {
-  const storageGames = localStorage.getItem("Games")
-  state.games = JSON.parse(String(storageGames))
-  console.log(state.games);
-
-  state.games.filter(game => {
-    if (game.id == state.game.id) {
-      const index = state.games.indexOf(game)
-      state.games[index] = state.game
-
-      localStorage.setItem("Games", JSON.stringify(state.games))
-    }
-  })
-
-  resetForm()
-}
-
-
-function deleteGame(pk: number) {
-  state.games.filter(game => {
-    if (game.id == pk) {
-      const index = state.games.indexOf(game)
-      state.games.splice(index, 1)
-
-      localStorage.setItem("Games", JSON.stringify(state.games))
-    }
-  })
-}
-
-
-function resetForm() {
-  state.game = {
-    id: Date.now(),
-    title: "",
-    genre: "",
-    played: false,
-  }
-}
-</script>
   
 <style scoped>
 .list-enter-active,

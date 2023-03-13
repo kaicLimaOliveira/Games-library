@@ -1,3 +1,7 @@
+<script setup lang="ts">
+import Games from "./views/Games.vue"
+</script>
+
 <template>
   <div>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/sketchy/bootstrap.min.css"
@@ -5,7 +9,3 @@
     <Games />
   </div>
 </template>
-
-<script setup lang="ts">
-import Games from "./views/Games.vue"
-</script>
