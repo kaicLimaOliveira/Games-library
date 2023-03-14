@@ -2,6 +2,8 @@
 import { onMounted, reactive } from 'vue';
 import Modal from '../components/Modal.vue';
 
+import { validateEmptyFields } from "../composables/validation"
+import type { Game } from "../interfaces/Game"
 
 interface State {
   games: {
@@ -10,14 +12,10 @@ interface State {
     genre: string;
     played: boolean;
   }[];
-  game: {
-    id: number;
-    title: string;
-    genre: string;
-    played: boolean;
-  };
+  game: Game;
   modal: boolean;
   mode: boolean;
+  error: boolean;
 }
 
 const state: State = reactive({
@@ -30,6 +28,7 @@ const state: State = reactive({
   },
   modal: false,
   mode: true,
+  error: false,
 })
 
 onMounted(async () => {
@@ -53,6 +52,9 @@ function getGame(pk: number) {
 
 
 function createGame() {
+  const isValid = validateEmptyFields(state.game)
+  if (!isValid) return state.error = true
+
   const storageGames = localStorage.getItem("Games")
   state.games = JSON.parse(String(storageGames));
   if (!state.games) state.games = [];
@@ -61,10 +63,14 @@ function createGame() {
   localStorage.setItem("Games", JSON.stringify(state.games))
 
   resetForm()
+  state.error = false
 }
 
 
 function updateGame() {
+  const isValid = validateEmptyFields(state.game)
+  if (!isValid) return state.error = true
+
   const storageGames = localStorage.getItem("Games")
   state.games = JSON.parse(String(storageGames))
 
@@ -78,6 +84,7 @@ function updateGame() {
   })
 
   resetForm()
+  state.error = false
 }
 
 
@@ -114,10 +121,17 @@ function resetForm() {
           <hr />
           <br />
 
-          <button @click="[state.mode = true, resetForm()]" type="button" class="btn btn-success btn-sm"
-            data-bs-toggle="modal" data-bs-target="#exampleModal">
-            {{ state.games.length == 0 ? 'Novo Jogo' : 'Novo Jogo+' }}
-          </button>
+          <div class="d-flex justify-content-between">
+            <button @click="[state.mode = true, resetForm()]" type="button" class="btn btn-success btn-sm"
+              data-bs-toggle="modal" data-bs-target="#exampleModal">
+              {{ state.games?.length == 0 ? 'Novo Jogo' : 'Novo Jogo+' }}
+            </button>
+
+            <Transition name="list" v-if="state.error" tag="div">
+              Preencha os campos Titulo e Genêro para registrar um jogo
+            </Transition>
+          </div>
+
 
           <br />
           <br />
